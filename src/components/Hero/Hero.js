@@ -10,7 +10,7 @@ const HeroSection = styled.section`
   min-height: 700px;
   display: flex;
   align-items: center;
-  background-image: linear-gradient(to right, rgba(0, 0, 0, 0.8), rgba(0, 0, 0, 0.5)), 
+  background-image: linear-gradient(to right, rgba(32, 38, 48, 0.8), rgba(32, 38, 48, 0.5)), 
     url('/images/hero-bg.jpg');
   background-size: cover;
   background-position: center;
@@ -25,7 +25,7 @@ const HeroContent = styled.div`
 const HeroTagline = styled(motion.p)`
   font-size: 1.2rem;
   font-weight: 500;
-  color: ${props => props.theme.colors.accent};
+  color: ${props => props.theme.colors.secondary};
   margin-bottom: 1rem;
   letter-spacing: 2px;
   text-transform: uppercase;
@@ -77,7 +77,7 @@ const PrimaryButton = styled(Button)`
   
   &:hover {
     background-color: ${props => props.theme.colors.accent};
-    box-shadow: 0 5px 15px rgba(139, 69, 19, 0.3);
+    box-shadow: 0 5px 15px rgba(94, 106, 125, 0.3);
   }
 `;
 
@@ -123,8 +123,8 @@ const WoodAccent = styled.div`
   left: 0;
   right: 0;
   height: 20px;
-  background-image: url('/images/wood-texture-dark.png');
-  background-size: cover;
+  background-color: ${props => props.theme.colors.accent};
+  background-image: none;
 `;
 
 const Hero = () => {

@@ -1,99 +1,96 @@
 import React from 'react';
 import styled from 'styled-components';
-import { motion } from 'framer-motion';
 import { Link } from 'react-router-dom';
+import { motion } from 'framer-motion';
 
 const NotFoundContainer = styled.section`
-  min-height: 100vh;
+  min-height: 80vh;
   display: flex;
+  flex-direction: column;
   align-items: center;
   justify-content: center;
-  padding: 2rem;
-  background-color: ${props => props.theme.colors.background};
-`;
-
-const Content = styled.div`
   text-align: center;
-  max-width: 600px;
+  padding: 2rem;
 `;
 
-const ErrorCode = styled(motion.h1)`
+const NotFoundCode = styled(motion.h1)`
   font-size: 8rem;
-  font-weight: 700;
   color: ${props => props.theme.colors.primary};
-  margin: 0;
-  line-height: 1;
-`;
-
-const Title = styled(motion.h2)`
-  font-size: 2.5rem;
   margin-bottom: 1rem;
-  color: ${props => props.theme.colors.dark};
+  line-height: 1;
+  
+  @media (max-width: 768px) {
+    font-size: 6rem;
+  }
 `;
 
-const Description = styled(motion.p)`
+const NotFoundTitle = styled(motion.h2)`
+  font-size: 2.5rem;
+  margin-bottom: 1.5rem;
+  
+  @media (max-width: 768px) {
+    font-size: 2rem;
+  }
+`;
+
+const NotFoundDescription = styled(motion.p)`
   font-size: 1.2rem;
+  max-width: 600px;
   margin-bottom: 2rem;
 `;
 
-const HomeButton = styled(motion.div)`
-  margin-top: 1rem;
-`;
-
-const StyledLink = styled(Link)`
+const HomeButton = styled(Link)`
   display: inline-block;
-  padding: 1rem 2rem;
   background-color: ${props => props.theme.colors.primary};
   color: ${props => props.theme.colors.textLight};
+  padding: 0.8rem 1.5rem;
   border-radius: 4px;
   font-weight: 500;
   text-transform: uppercase;
+  letter-spacing: 1px;
   transition: all 0.3s ease;
   
   &:hover {
     background-color: ${props => props.theme.colors.accent};
     transform: translateY(-3px);
-    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
   }
 `;
 
 const NotFoundPage = () => {
   return (
     <NotFoundContainer>
-      <Content>
-        <ErrorCode
-          initial={{ opacity: 0, scale: 0.8 }}
-          animate={{ opacity: 1, scale: 1 }}
-          transition={{ duration: 0.5 }}
-        >
-          404
-        </ErrorCode>
-        
-        <Title
-          initial={{ opacity: 0, y: 20 }}
-          animate={{ opacity: 1, y: 0 }}
-          transition={{ duration: 0.5, delay: 0.2 }}
-        >
-          Page Not Found
-        </Title>
-        
-        <Description
-          initial={{ opacity: 0, y: 20 }}
-          animate={{ opacity: 1, y: 0 }}
-          transition={{ duration: 0.5, delay: 0.3 }}
-        >
-          The page you're looking for doesn't exist or has been moved.
-          Please check the URL or navigate back to the homepage.
-        </Description>
-        
-        <HomeButton
-          initial={{ opacity: 0, y: 20 }}
-          animate={{ opacity: 1, y: 0 }}
-          transition={{ duration: 0.5, delay: 0.4 }}
-        >
-          <StyledLink to="/">Back to Home</StyledLink>
-        </HomeButton>
-      </Content>
+      <NotFoundCode
+        initial={{ opacity: 0, y: -50 }}
+        animate={{ opacity: 1, y: 0 }}
+        transition={{ duration: 0.6 }}
+      >
+        404
+      </NotFoundCode>
+      
+      <NotFoundTitle
+        initial={{ opacity: 0 }}
+        animate={{ opacity: 1 }}
+        transition={{ duration: 0.6, delay: 0.2 }}
+      >
+        Page Not Found
+      </NotFoundTitle>
+      
+      <NotFoundDescription
+        initial={{ opacity: 0 }}
+        animate={{ opacity: 1 }}
+        transition={{ duration: 0.6, delay: 0.4 }}
+      >
+        Oops! The page you're looking for doesn't exist or has been moved.
+        Please check the URL or go back to the homepage.
+      </NotFoundDescription>
+      
+      <motion.div
+        initial={{ opacity: 0 }}
+        animate={{ opacity: 1 }}
+        transition={{ duration: 0.6, delay: 0.6 }}
+      >
+        <HomeButton to="/">Back to Home</HomeButton>
+      </motion.div>
     </NotFoundContainer>
   );
 };

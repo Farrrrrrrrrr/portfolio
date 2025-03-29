@@ -80,14 +80,14 @@ const NavLinkStyled = styled(NavLink)`
     position: absolute;
     width: 0;
     height: 2px;
-    background-color: ${props => props.theme.colors.accent};
+    background-color: ${props => props.theme.colors.secondary};
     bottom: -4px;
     left: 0;
     transition: width 0.3s ease;
   }
   
   &:hover, &.active {
-    color: ${props => props.theme.colors.accent};
+    color: ${props => props.theme.colors.secondary};
     
     &:after {
       width: 100%;

@@ -1,115 +1,360 @@
 import React, { useEffect, useState } from 'react';
-import { useParams, Navigate } from 'react-router-dom';
-import ProjectDetail from '../components/Projects/ProjectDetail';
+import { useParams, useNavigate, Link } from 'react-router-dom';
+import styled from 'styled-components';
+import { motion } from 'framer-motion';
+import { FaGithub, FaExternalLinkAlt, FaArrowLeft, FaArrowRight } from 'react-icons/fa';
+import { useContent } from '../context/ContentContext';
 
-// This would typically come from an API or data file
-const getProjectData = () => {
-  return [
-    {
-      id: "e-commerce-platform",
-      title: "E-Commerce Platform",
-      date: "August 2023",
-      description: "A fully responsive e-commerce platform with user authentication, product catalog, and payment processing integration.",
-      longDescription: `
-        <p>This comprehensive e-commerce solution was built from the ground up to provide businesses with a customizable, user-friendly online store. The platform combines modern design principles with robust functionality to deliver an exceptional shopping experience.</p>
-        
-        <p>The front-end was developed using React and Styled Components, creating a responsive interface that adapts seamlessly to all device sizes. State management was handled with Redux, ensuring a consistent user experience throughout the application.</p>
-        
-        <h3>Key Features</h3>
-        <ul>
-          <li>User authentication and profile management</li>
-          <li>Advanced product filtering and search capabilities</li>
-          <li>Secure checkout process with multiple payment options</li>
-          <li>Order tracking and history for customers</li>
-          <li>Comprehensive admin dashboard for inventory management</li>
-          <li>Detailed analytics and reporting tools</li>
-        </ul>
-        
-        <p>The back-end infrastructure was built with Node.js and Express, connected to a MongoDB database. RESTful APIs were implemented to handle data exchange between the client and server, with JWT authentication ensuring secure access to protected routes.</p>
-        
-        <p>Integration with Stripe API allows for secure processing of various payment methods, while AWS S3 was utilized for storing product images and other media assets.</p>
-      `,
-      image: "/images/projects/project1.jpg",
-      technologies: ["React", "Node.js", "MongoDB", "Redux", "Express", "Stripe API", "AWS S3"],
-      liveUrl: "https://example.com/ecommerce",
-      githubUrl: "https://github.com/example/ecommerce",
-      gallery: [
-        "/images/projects/project1-detail1.jpg",
-        "/images/projects/project1-detail2.jpg",
-        "/images/projects/project1-detail3.jpg",
-      ]
-    },
-    {
-      id: "data-visualization-dashboard",
-      title: "Data Visualization Dashboard",
-      date: "June 2023",
-      description: "Interactive dashboard for visualizing complex datasets with real-time filtering and customizable charts.",
-      longDescription: `
-        <p>This powerful data visualization platform transforms complex data into intuitive, interactive visual representations. It allows users to gain meaningful insights from large datasets without requiring advanced technical skills.</p>
-        
-        <p>Built with D3.js and React, the dashboard features a modular architecture that supports various chart types and visualization techniques. The interface was designed for maximum usability, with careful attention to information hierarchy and user interaction patterns.</p>
-        
-        <h3>Key Features</h3>
-        <ul>
-          <li>Interactive data filtering and sorting capabilities</li>
-          <li>Multiple visualization types (bar charts, line graphs, heat maps, etc.)</li>
-          <li>Custom dashboard creation and configuration</li>
-          <li>Real-time data updating and streaming</li>
-          <li>CSV/JSON data import and export functionality</li>
-          <li>Responsive design for desktop and tablet use</li>
-        </ul>
-        
-        <p>The back-end utilizes Express and MySQL for efficient data storage and retrieval, with optimized queries to handle large datasets. API endpoints were designed following RESTful principles for seamless integration with the front-end.</p>
-        
-        <p>The system includes robust authentication and authorization mechanisms to ensure data security while providing flexible access control for different user roles.</p>
-      `,
-      image: "/images/projects/project2.jpg",
-      technologies: ["D3.js", "React", "Express", "MySQL", "Recharts", "Bootstrap"],
-      liveUrl: "https://example.com/dashboard",
-      githubUrl: "https://github.com/example/dashboard",
-      gallery: [
-        "/images/projects/project2-detail1.jpg",
-        "/images/projects/project2-detail2.jpg",
-        "/images/projects/project2-detail3.jpg",
-      ]
-    },
-    // Additional projects would be defined here
-  ];
-};
+const ProjectHeader = styled.div`
+  background-color: ${props => props.theme.colors.dark};
+  color: ${props => props.theme.colors.textLight};
+  padding: 8rem 0 5rem;
+  position: relative;
+  
+  &:before {
+    content: '';
+    position: absolute;
+    top: 0;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    background-image: linear-gradient(to bottom, rgba(32, 38, 48, 0.9), rgba(32, 38, 48, 0.7)), 
+      url(${props => props.image});
+    background-size: cover;
+    background-position: center;
+    z-index: 0;
+  }
+`;
+
+const HeaderContent = styled.div`
+  position: relative;
+  z-index: 1;
+  
+  h1 {
+    font-size: 3rem;
+    margin-bottom: 1rem;
+    
+    @media (max-width: 768px) {
+      font-size: 2.2rem;
+    }
+  }
+`;
+
+const ProjectMeta = styled.div`
+  display: flex;
+  flex-wrap: wrap;
+  gap: 2rem;
+  margin-top: 2rem;
+  
+  @media (max-width: 768px) {
+    flex-direction: column;
+    gap: 1rem;
+  }
+`;
+
+const MetaItem = styled.div`
+  h4 {
+    font-size: 0.9rem;
+    margin-bottom: 0.3rem;
+    opacity: 0.8;
+  }
+  
+  p {
+    font-size: 1.1rem;
+    margin-bottom: 0;
+  }
+`;
+
+const ProjectContent = styled.section`
+  padding: 5rem 0;
+`;
+
+const ContentGrid = styled.div`
+  display: grid;
+  grid-template-columns: 2fr 1fr;
+  gap: 3rem;
+  
+  @media (max-width: 992px) {
+    grid-template-columns: 1fr;
+  }
+`;
+
+const Description = styled.div`
+  h2 {
+    margin-bottom: 1.5rem;
+  }
+  
+  p {
+    margin-bottom: 1.5rem;
+    line-height: 1.8;
+  }
+`;
+
+const ProjectSidebar = styled.div`
+  background-color: ${props => props.theme.colors.light};
+  padding: 2rem;
+  border-radius: 8px;
+  align-self: start;
+`;
+
+const TagList = styled.div`
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.8rem;
+  margin-bottom: 2rem;
+`;
+
+const Tag = styled.span`
+  background-color: ${props => props.theme.colors.primary};
+  color: ${props => props.theme.colors.textLight};
+  padding: 0.5rem 1rem;
+  border-radius: 30px;
+  font-size: 0.9rem;
+  font-weight: 500;
+`;
+
+const ProjectLinks = styled.div`
+  margin-top: 2rem;
+  display: flex;
+  flex-direction: column;
+  gap: 1rem;
+`;
+
+const ProjectLink = styled.a`
+  display: flex;
+  align-items: center;
+  gap: 0.8rem;
+  padding: 0.8rem 1rem;
+  border-radius: 4px;
+  background-color: ${props => props.primary ? props.theme.colors.primary : props.theme.colors.dark};
+  color: ${props => props.theme.colors.textLight};
+  text-decoration: none;
+  transition: all 0.3s ease;
+  
+  &:hover {
+    transform: translateY(-2px);
+    opacity: 0.9;
+  }
+`;
+
+const GallerySection = styled.section`
+  padding: 3rem 0 5rem;
+  background-color: ${props => props.theme.colors.light};
+`;
+
+const Gallery = styled.div`
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(300px, 1fr));
+  gap: 1.5rem;
+`;
+
+const GalleryImage = styled(motion.div)`
+  height: 250px;
+  background-image: url(${props => props.image});
+  background-size: cover;
+  background-position: center;
+  border-radius: 8px;
+  cursor: pointer;
+  transition: all 0.3s ease;
+  
+  &:hover {
+    transform: scale(1.02);
+    box-shadow: ${props => props.theme.shadows.medium};
+  }
+`;
+
+const Navigation = styled.div`
+  display: flex;
+  justify-content: space-between;
+  padding: 3rem 0;
+  border-top: 1px solid ${props => props.theme.colors.light};
+  margin-top: 3rem;
+`;
+
+const NavLink = styled(Link)`
+  display: flex;
+  align-items: center;
+  gap: 0.8rem;
+  color: ${props => props.theme.colors.text};
+  transition: all 0.3s ease;
+  
+  span {
+    font-weight: 500;
+  }
+  
+  &:hover {
+    color: ${props => props.theme.colors.primary};
+  }
+  
+  &.prev {
+    margin-right: auto;
+  }
+  
+  &.next {
+    margin-left: auto;
+    flex-direction: row-reverse;
+  }
+`;
 
 const ProjectDetailsPage = () => {
   const { projectId } = useParams();
+  const navigate = useNavigate();
+  const { projects } = useContent();
   const [project, setProject] = useState(null);
-  const [loading, setLoading] = useState(true);
+  const [prevProject, setPrevProject] = useState(null);
+  const [nextProject, setNextProject] = useState(null);
   
   useEffect(() => {
-    // Simulate API call to fetch project details
-    const fetchProjectDetails = () => {
-      const allProjects = getProjectData();
-      const foundProject = allProjects.find(p => p.id === projectId);
-      
-      setTimeout(() => {
-        setProject(foundProject);
-        setLoading(false);
-      }, 500);
-    };
+    const found = projects.find(p => p.slug === projectId);
     
-    fetchProjectDetails();
-  }, [projectId]);
-  
-  if (loading) {
-    return (
-      <div className="container" style={{ padding: '10rem 0', textAlign: 'center' }}>
-        <h2>Loading project details...</h2>
-      </div>
-    );
-  }
+    if (!found) {
+      navigate('/404');
+      return;
+    }
+    
+    setProject(found);
+    
+    // Find prev and next projects
+    const currentIndex = projects.findIndex(p => p.slug === projectId);
+    setPrevProject(currentIndex > 0 ? projects[currentIndex - 1] : null);
+    setNextProject(currentIndex < projects.length - 1 ? projects[currentIndex + 1] : null);
+    
+  }, [projectId, projects, navigate]);
   
   if (!project) {
-    return <Navigate to="/not-found" replace />;
+    return null; // Or a loading state
   }
   
-  return <ProjectDetail project={project} />;
+  return (
+    <>
+      <ProjectHeader image={project.featuredImage}>
+        <div className="container">
+          <HeaderContent>
+            <motion.div
+              initial={{ opacity: 0, y: 30 }}
+              animate={{ opacity: 1, y: 0 }}
+              transition={{ duration: 0.6 }}
+            >
+              <h1>{project.title}</h1>
+              <p>{project.description}</p>
+              
+              <ProjectMeta>
+                <MetaItem>
+                  <h4>Client</h4>
+                  <p>{project.clientName}</p>
+                </MetaItem>
+                
+                <MetaItem>
+                  <h4>Completion Date</h4>
+                  <p>{project.completionDate}</p>
+                </MetaItem>
+                
+                <MetaItem>
+                  <h4>Category</h4>
+                  <p>{project.category}</p>
+                </MetaItem>
+              </ProjectMeta>
+            </motion.div>
+          </HeaderContent>
+        </div>
+      </ProjectHeader>
+      
+      <ProjectContent>
+        <div className="container">
+          <ContentGrid>
+            <Description>
+              <motion.div
+                initial={{ opacity: 0, y: 30 }}
+                animate={{ opacity: 1, y: 0 }}
+                transition={{ duration: 0.6 }}
+              >
+                <h2>About This Project</h2>
+                <div dangerouslySetInnerHTML={{ __html: project.longDescription.replace(/\n/g, '<br />') }} />
+              </motion.div>
+            </Description>
+            
+            <ProjectSidebar>
+              <motion.div
+                initial={{ opacity: 0, x: 30 }}
+                animate={{ opacity: 1, x: 0 }}
+                transition={{ duration: 0.6 }}
+              >
+                <h3>Technologies</h3>
+                <TagList>
+                  {project.tags.map((tag, index) => (
+                    <Tag key={index}>{tag}</Tag>
+                  ))}
+                </TagList>
+                
+                <ProjectLinks>
+                  {project.projectUrl && (
+                    <ProjectLink 
+                      href={project.projectUrl} 
+                      target="_blank" 
+                      rel="noopener noreferrer"
+                      primary
+                    >
+                      <FaExternalLinkAlt /> Visit Live Site
+                    </ProjectLink>
+                  )}
+                  
+                  {project.githubUrl && (
+                    <ProjectLink 
+                      href={project.githubUrl} 
+                      target="_blank" 
+                      rel="noopener noreferrer"
+                    >
+                      <FaGithub /> View Source Code
+                    </ProjectLink>
+                  )}
+                </ProjectLinks>
+              </motion.div>
+            </ProjectSidebar>
+          </ContentGrid>
+        </div>
+      </ProjectContent>
+      
+      {project.screenshots && project.screenshots.length > 0 && (
+        <GallerySection>
+          <div className="container">
+            <h2 className="section-title">Project Gallery</h2>
+            <Gallery>
+              {project.screenshots.map((image, index) => (
+                image && (
+                  <GalleryImage 
+                    key={index} 
+                    image={image}
+                    initial={{ opacity: 0, scale: 0.9 }}
+                    whileInView={{ opacity: 1, scale: 1 }}
+                    transition={{ duration: 0.5, delay: index * 0.1 }}
+                    viewport={{ once: true }}
+                  />
+                )
+              ))}
+            </Gallery>
+          </div>
+        </GallerySection>
+      )}
+      
+      <div className="container">
+        <Navigation>
+          {prevProject && (
+            <NavLink to={`/portfolio/${prevProject.slug}`} className="prev">
+              <FaArrowLeft />
+              <span>Previous Project</span>
+            </NavLink>
+          )}
+          
+          {nextProject && (
+            <NavLink to={`/portfolio/${nextProject.slug}`} className="next">
+              <span>Next Project</span>
+              <FaArrowRight />
+            </NavLink>
+          )}
+        </Navigation>
+      </div>
+    </>
+  );
 };
 
 export default ProjectDetailsPage;

@@ -26,7 +26,7 @@ const SocialLink = styled.a`
   transition: all 0.3s ease;
   
   &:hover {
-    color: ${props => props.theme.colors.accent};
+    color: ${props => props.theme.colors.secondary};
     transform: translateY(-3px);
   }
 `;
@@ -52,8 +52,8 @@ const FooterNavLink = styled.a`
 const WoodAccent = styled.div`
   height: 10px;
   width: 100%;
-  background-image: url('/images/wood-texture-dark.png');
-  background-size: cover;
+  background-color: ${props => props.theme.colors.accent};
+  background-image: none;
 `;
 
 const Footer = () => {
